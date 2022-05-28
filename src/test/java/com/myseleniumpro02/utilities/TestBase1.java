@@ -7,63 +7,79 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
 
-public abstract class TestBase<extentHtmlReporter, extentReports, extentTest> {
 
+public class TestBase1 {
+
+    /*
+     * What is TestBase?
+     * TestBase is a class that has repeated pre condition and post condiditon
+     * We have @Before and @After methods
+     *
+     * TestBase should be an abstract class.We just want to implement the methods in TestBase
+     * We don't want to create an object od TestBase class
+     *
+     * */
     protected static WebDriver driver;
-    ExtentReports extentReports;
-    ExtentTest extentTest;
-    ExtentHtmlReporter extentHtmlReporter;
+    protected ExtentReports extentReports;
+    protected ExtentHtmlReporter extentHtmlReporter;
+    protected ExtentTest extentTest;
+
 
     @Before
-    public void setup() {
+    public void setUp(){
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
-        driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.manage().window().maximize();
 
-
-        //The Code about Extend Reports
+//        Code about extent reports
+        //        Report PATH= creates the html report right under test-output
         String currentDate = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-        String path = System.getProperty("user.dir") + "/test-output/report/" + currentDate + "test_report.html";
-        //Create HTML reportet us,ng the path
+        String path = System.getProperty("user.dir")+"/test-output/report/"+currentDate+"test_report.html";
+//      Create html reporter using the path
         extentHtmlReporter = new ExtentHtmlReporter(path);
-        //Create extent report
+//        Create extent report
         extentReports = new ExtentReports();
-        //Add custom information
-        extentReports.setSystemInfo("Environment", "Test Environment");
-        extentReports.setSystemInfo("Browser", "Chrome");
-        extentReports.setSystemInfo("Application", "TechproEd");
-        extentReports.setSystemInfo("SQA", "john");
-
-        extentHtmlReporter.config().setDocumentTitle("TechProEd BluCar");
-        extentHtmlReporter.config().setDocumentTitle("TechProEd Extent Report");
-
-        //Attach  HTML & extent reports
+//        Add custom information
+        extentReports.setSystemInfo("Environment","Test Environment");
+        extentReports.setSystemInfo("Browser","Chrome");
+        extentReports.setSystemInfo("Application","TechProEd");
+        extentReports.setSystemInfo("SQA","John");
+        extentHtmlReporter.config().setDocumentTitle("TechProEd BlueCar");
+        extentHtmlReporter.config().setReportName("TechProEd Extent Report");
+//        Attach html and extent reports
         extentReports.attachReporter(extentHtmlReporter);
-        //Report is completed. Now we just create test using extentTest object
-        extentTest = extentReports.createTest("my Project Extent Report", "This is for smoke test report");
+//        Report is complete. Now we just need to create test using extentTest object
+        extentTest = extentReports.createTest("My Project Extent Report","This is for smoke test report");
+//        Done with configuration......
+
+
 
     }
-
     @After
-    public void tearDown() {
+    public void tearDown(){
         driver.quit();
         extentReports.flush();
     }
-
-    //Checkbox
+    /*
+     * Create a reusable method for clicking checkbox
+     * @param checkboxElement : WebElement of the checkbox
+     * @param checked : boolean of the checkbox element
+     *
+     * Example: if you want to click when checkbox is checked then checked = true
+     *         if you want to click when checkbox is not checked then checked = false
+     *
+     *         selectCheckBox(checkbox1, true); make sure the checkbox1 is checked
+     *         selectCheckBox(checkbox1, false); make sure the checkbox1 is unchecked
+     */
     public static void selectCheckBox(WebElement checkboxElement, boolean checked){
         if(checked){
             if (!checkboxElement.isSelected()){
@@ -75,7 +91,10 @@ public abstract class TestBase<extentHtmlReporter, extentReports, extentTest> {
             }
         }
     }
-    //Window Handle
+    /*
+    Accepts windowHandle as parameter
+    And switches to that window
+    * */
     public static void switchToTargetWindow(String targetTitle) {
         for (String handle : driver.getWindowHandles()) {
             String title = driver.switchTo().window(handle).getTitle();
@@ -85,8 +104,6 @@ public abstract class TestBase<extentHtmlReporter, extentReports, extentTest> {
             }
         }
     }
-
-    //ScreenShot
     public void takeScreenShot() throws IOException {
 //        1. Taking screenshot using getScreenshotAs
         File image = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
@@ -102,6 +119,4 @@ public abstract class TestBase<extentHtmlReporter, extentReports, extentTest> {
         File finalPath = new File(path);
         FileUtils.copyFile(image,finalPath);
     }
-
-
 }

@@ -4,6 +4,8 @@ import com.myseleniumpro02.utilities.TestBase;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
+import static com.myseleniumpro02.utilities.TestBase1.switchToTargetWindow;
+
 public class Day08multipleWindowUtil extends TestBase {
 
     @Test

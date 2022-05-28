@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import static com.myseleniumpro02.utilities.TestBase1.selectCheckBox;
+
 public class Day08CheckboxUtil extends TestBase {
     @Test
     public void checkBoxTest() throws InterruptedException {
