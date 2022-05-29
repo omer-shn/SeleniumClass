@@ -7,10 +7,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.io.File;
@@ -57,30 +54,33 @@ public abstract class TestBase<extentHtmlReporter, extentReports, extentTest> {
 
     }
 
-    @After
+  /*  @After
     public void tearDown() {
         driver.quit();
         extentReports.flush();
     }
 
+   */
+
     //Checkbox
-    public static void selectCheckBox(WebElement checkboxElement, boolean checked){
-        if(checked){
-            if (!checkboxElement.isSelected()){
+    public static void selectCheckBox(WebElement checkboxElement, boolean checked) {
+        if (checked) {
+            if (!checkboxElement.isSelected()) {
                 checkboxElement.click();
             }
-        }else{
-            if (checkboxElement.isSelected()){
+        } else {
+            if (checkboxElement.isSelected()) {
                 checkboxElement.click();
             }
         }
     }
+
     //Window Handle
     public static void switchToTargetWindow(String targetTitle) {
         for (String handle : driver.getWindowHandles()) {
             String title = driver.switchTo().window(handle).getTitle();
             if (title.equals(targetTitle)) {
-                System.out.println("Page found : "+driver.getTitle());
+                System.out.println("Page found : " + driver.getTitle());
                 return;
             }
         }
@@ -89,7 +89,7 @@ public abstract class TestBase<extentHtmlReporter, extentReports, extentTest> {
     //ScreenShot
     public void takeScreenShot() throws IOException {
 //        1. Taking screenshot using getScreenshotAs
-        File image = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+        File image = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         /*
         Alternatively
         TakesScreenshot ts=(TakesScreenshot)driver;
@@ -98,10 +98,54 @@ public abstract class TestBase<extentHtmlReporter, extentReports, extentTest> {
 //        2. We will save the image in this path. using currentDate for getting different name every time
         String currentDate = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
 //        System.out.println(currentDate);
-        String path = System.getProperty("user.dir")+"/test-output/Screenshots/"+currentDate+"test-image.png";
+        String path = System.getProperty("user.dir") + "/test-output/Screenshots/" + currentDate + "test-image.png";
         File finalPath = new File(path);
-        FileUtils.copyFile(image,finalPath);
+        FileUtils.copyFile(image, finalPath);
     }
 
-
+    public void scrollIntoViewByJS(WebElement element) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+    public void scrollAllDownByJS(){
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        js.executeScript("window.scrollTo(0,document.body.scrollHeight)");
+    }
+    public void scrollAllUpByJS(){
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        js.executeScript("window.scrollTo(0,-document.body.scrollHeight)");
+    }
+    //    Click on a specific element
+    public void clickByJS(WebElement element){
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        js.executeScript("arguments[0].click()",element);
+    }
+    // Set the value of an input using js executor. element  date field,   text 5/29/2022
+//    This method changes the value attribute of an element.
+//    It changes the input text
+    public void setValueByJS(WebElement element, String text){
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        js.executeScript("arguments[0].setAttribute('value','"+text+"')",element);
+    }
+    //    get the value of an input. param: idOfElement
+    public void getValueByJS(String idOfElement){
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        String value=js.executeScript("return document.getElementById('"+idOfElement+"').value").toString();
+        System.out.println(value);
+//        How you get get the value of an input box?
+//        We can js executor.
+//        How?
+//        I can get the element using js executor, and get teh value of the element.
+//        For example, I can get the element by id, and use value attribute to get the value of in an input
+//        I have to do this, cause getText in this case does not return teh text in an input
+    }
+    //    Changes the changeBackgroundColorByJS of an element. Params: WebElement element, String color
+    public void changeBackgroundColorByJS(WebElement element, String color){
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        js.executeScript("arguments[0].style.backgroundColor='"+color+"'",element);
+    }
+    public void addBorderWithJS(WebElement element, String borderStyle){
+        JavascriptExecutor js = (JavascriptExecutor)driver;
+        js.executeScript("arguments[0].style.border='"+borderStyle+"'",element);
+    }
 }
